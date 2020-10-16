@@ -16,7 +16,12 @@ mongoose.connect(uri, {
   useNewUrlParser: true,
   useCreateIndex: true,
 });
-const connection = mongoose.connection;
+
+const { connection } = mongoose;
+connection.on('error', () => {
+  console.error.bind(console, 'connection error:');
+  process.exit(1);
+});
 connection.once('open', () => {
   console.log('MongoDB database connection established successfully');
 });

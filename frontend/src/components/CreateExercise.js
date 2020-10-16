@@ -11,7 +11,7 @@ const CreateExercise = () => {
   const [date, setDate] = useState(new Date());
 
   useEffect(() => {
-    axios.get('http://localhost:5000/users/').then((response) => {
+    axios.get(`${process.env.REACT_APP_API}/users/`).then((response) => {
       if (response.data.length > 0) {
         setUsers(response.data.map((user) => user.username));
       }
@@ -29,12 +29,9 @@ const CreateExercise = () => {
     };
 
     axios
-      .post('http://localhost:5000/exercises/add', exercise)
-      .then((res) => console.log(res.data));
-  };
-
-  const onChange = (e) => {
-    setUsername(e.target.value);
+      .post(`${process.env.REACT_APP_API}/exercises/add`, exercise)
+      .then((res) => console.log(res.data))
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -47,8 +44,9 @@ const CreateExercise = () => {
             required
             className="form-control"
             value={username}
-            onChange={onChange}
+            onChange={(e) => setUsername(e.target.value)}
           >
+            <option value="select">Select a Username</option>
             {users.map((user) => {
               return (
                 <option key={user} value={user}>

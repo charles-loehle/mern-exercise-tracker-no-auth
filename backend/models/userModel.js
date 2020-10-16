@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
@@ -13,7 +13,7 @@ const userSchema = new Schema(
     },
   },
   {
-    // If set timestamps, mongoose assigns createdAt and updatedAt fields to your schema, the type assigned is Date.
+    // mongoose assigns createdAt and updatedAt fields to your schema, the type assigned is Date.
     timestamps: true,
   }
 );
