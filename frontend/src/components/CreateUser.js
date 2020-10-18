@@ -11,8 +11,6 @@ const CreateUser = () => {
       username,
     };
 
-    console.log(user);
-
     axios
       .post(`${process.env.REACT_APP_API}/users/add`, user)
       .then((res) => console.log(res.data))

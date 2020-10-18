@@ -4,9 +4,10 @@ const { Schema } = mongoose;
 
 const exerciseSchema = new Schema(
   {
-    username: {
-      type: String,
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: 'User',
     },
     description: {
       type: String,

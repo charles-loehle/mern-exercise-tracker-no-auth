@@ -5,15 +5,21 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 const CreateExercise = () => {
   const [username, setUsername] = useState('');
+  const [users, setUsers] = useState([]);
+  const [userId, setUserId] = useState('');
+
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(0);
-  const [users, setUsers] = useState([]);
   const [date, setDate] = useState(new Date());
 
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API}/users/`).then((response) => {
+    // GET  /users
+    // all users to populate the dropdown menu
+    axios.get(`${process.env.REACT_APP_API}/users`).then((response) => {
+      console.log(response.data);
       if (response.data.length > 0) {
         setUsers(response.data.map((user) => user.username));
+        setUserId(response.data.map((user) => user._id));
       }
     });
   }, [username]);
@@ -22,12 +28,13 @@ const CreateExercise = () => {
     e.preventDefault();
 
     const exercise = {
-      username,
+      user: userId,
       description,
       duration,
       date,
     };
-
+    // POST  /exercises/add
+    // Add a new exercise
     axios
       .post(`${process.env.REACT_APP_API}/exercises/add`, exercise)
       .then((res) => console.log(res.data))

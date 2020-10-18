@@ -5,6 +5,15 @@ const Exercise = require('../models/exerciseModel');
 // @route   GET /exercises
 router.route('/').get((req, res) => {
   Exercise.find()
+    .populate('user', 'username')
+    .then((exercises) => res.json(exercises))
+    .catch((err) => res.status(400).json(`Error: ${err}`));
+});
+
+// @desc    Get user's exercises
+// @route   GET /exercises/myexercises/:id
+router.route('/myexercises/:id').get((req, res) => {
+  Exercise.find({ user: req.params.id })
     .then((exercises) => res.json(exercises))
     .catch((err) => res.status(400).json(`Error: ${err}`));
 });
@@ -12,11 +21,17 @@ router.route('/').get((req, res) => {
 // @desc    Add a new exercise
 // @route   POST /exercises/add
 router.route('/add').post((req, res) => {
-  const { username, description } = req.body;
+  const { user, username, description } = req.body;
   const duration = Number(req.body.duration);
   const date = Date.parse(req.body.date);
 
-  const newExercise = new Exercise({ username, description, duration, date });
+  const newExercise = new Exercise({
+    user,
+    username,
+    description,
+    duration,
+    date,
+  });
 
   newExercise
     .save()

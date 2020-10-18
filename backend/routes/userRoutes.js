@@ -9,6 +9,14 @@ router.route('/').get((req, res) => {
     .catch((err) => res.status(400).json(`Error: ${err}`));
 });
 
+// @desc    Get user by id
+// @route   GET /users/:id
+router.route('/:id').get((req, res) => {
+  User.findById(req.params.id)
+    .then((user) => res.json(user))
+    .catch((err) => res.status(400).json(`Error: ${err}`));
+});
+
 // @desc    Add a new user
 // @route   POST /users/add
 router.route('/add').post((req, res) => {

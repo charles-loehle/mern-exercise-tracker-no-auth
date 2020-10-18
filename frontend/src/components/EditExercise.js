@@ -3,7 +3,7 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const EditExercise = (props) => {
+const EditExercise = ({ match }) => {
   const [username, setUsername] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(0);
@@ -13,7 +13,8 @@ const EditExercise = (props) => {
   useEffect(() => {
     // 1. get single exercise by id
     axios
-      .get(`${process.env.REACT_APP_API}/exercises/${props.match.params.id}`)
+      // GET /exercises/:id
+      .get(`${process.env.REACT_APP_API}/exercises/${match.params.id}`)
       .then((response) => {
         const { username, description, duration, date } = response.data;
         setUsername(username);
@@ -25,6 +26,7 @@ const EditExercise = (props) => {
 
     // 2. get all users to populate user dropdown
     axios
+      // GET /users
       .get(`${process.env.REACT_APP_API}/users`)
       .then((response) => {
         if (response.data.length > 0) {
@@ -46,7 +48,7 @@ const EditExercise = (props) => {
 
     axios
       .post(
-        `${process.env.REACT_APP_API}/exercises/update/${props.match.params.id}`,
+        `${process.env.REACT_APP_API}/exercises/update/${match.params.id}`,
         exercise
       )
       .then((res) => console.log(res.data))
