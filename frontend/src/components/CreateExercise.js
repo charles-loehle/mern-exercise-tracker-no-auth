@@ -5,8 +5,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 const CreateExercise = () => {
   const [username, setUsername] = useState('');
+  // const [user, setUser] = useState('');
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState('');
+  const [userObj, setUserObj] = useState({});
 
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(0);
@@ -16,10 +18,10 @@ const CreateExercise = () => {
     // GET  /users
     // all users to populate the dropdown menu
     axios.get(`${process.env.REACT_APP_API}/users`).then((response) => {
-      console.log(response.data);
+      //console.log(response.data);
       if (response.data.length > 0) {
         setUsers(response.data.map((user) => user.username));
-        setUserId(response.data.map((user) => user._id));
+        setUserObj(response.data);
       }
     });
   }, [username]);
@@ -28,17 +30,26 @@ const CreateExercise = () => {
     e.preventDefault();
 
     const exercise = {
-      user: userId,
+      user: userId._id,
       description,
       duration,
       date,
     };
+    console.log(exercise);
     // POST  /exercises/add
     // Add a new exercise
     axios
       .post(`${process.env.REACT_APP_API}/exercises/add`, exercise)
       .then((res) => console.log(res.data))
       .catch((error) => console.log(error));
+  };
+
+  const getUser = (e) => {
+    // show username on dropdown
+    setUsername(e.target.value);
+
+    // get user object of selected user
+    setUserId(userObj.find((x) => (x.username === e.target.value ? x : '')));
   };
 
   return (
@@ -51,7 +62,7 @@ const CreateExercise = () => {
             required
             className="form-control"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={getUser}
           >
             <option value="select">Select a Username</option>
             {users.map((user) => {
