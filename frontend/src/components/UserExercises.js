@@ -24,7 +24,7 @@ const UserExercises = ({ match }) => {
         setExercises(res.data);
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [match.params.id]);
 
   const deleteExercise = (id) => {
     // axios

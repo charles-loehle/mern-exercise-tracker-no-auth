@@ -2,39 +2,36 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Message from './Message';
+import { Link } from 'react-router-dom';
 
 const EditExercise = ({ match }) => {
   const [username, setUsername] = useState('');
+  const [user, setUser] = useState([]);
+  const [exercise, setExercise] = useState([]);
+
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(0);
-  const [users, setUsers] = useState([]);
   const [date, setDate] = useState(new Date());
 
+  const [message, setMessage] = useState('');
+  const [variant, setVariant] = useState('');
+
   useEffect(() => {
-    // 1. get single exercise by id
+    // 2. get single exercise by id
     axios
       // GET /exercises/:id
       .get(`${process.env.REACT_APP_API}/exercises/${match.params.id}`)
       .then((response) => {
         const { username, description, duration, date } = response.data;
+        setExercise(response.data);
         setUsername(username);
         setDescription(description);
         setDuration(duration);
         setDate(new Date(date));
       })
       .catch((error) => console.log(error));
-
-    // 2. get all users to populate user dropdown
-    axios
-      // GET /users
-      .get(`${process.env.REACT_APP_API}/users`)
-      .then((response) => {
-        if (response.data.length > 0) {
-          setUsers(response.data.map((user) => user.username));
-        }
-      })
-      .catch((error) => console.log(error));
-  }, []);
+  }, [match.params.id]);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -51,32 +48,40 @@ const EditExercise = ({ match }) => {
         `${process.env.REACT_APP_API}/exercises/update/${match.params.id}`,
         exercise
       )
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        console.log(res.data);
+        setMessage(res.data);
+        setVariant('success');
+        setTimeout(() => {
+          setMessage('');
+        }, 4000);
+      })
+      .catch((error) => {
+        console.log(error);
+        setMessage('Something went wrong, please try again');
+        setVariant('danger');
+        setTimeout(() => {
+          setMessage('');
+        }, 4000);
+      });
+  };
+
+  const getUsername = () => {
+    axios
+      .get(`${process.env.REACT_APP_API}/users/${exercise.user}`)
+      .then((res) => {
+        setUser(res.data);
+      })
       .catch((error) => console.log(error));
+
+    return user.username;
   };
 
   return (
     <div>
-      <h1>Edit an Exercise</h1>
+      <h1>Edit {getUsername()}'s Exercise</h1>
+      {message && <Message variant={variant}>{message}</Message>}
       <form onSubmit={submitHandler}>
-        <div className="form-group">
-          <label>Username: </label>
-          <select
-            required
-            className="form-control"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          >
-            {users.map((user) => {
-              return (
-                <option key={user} value={user}>
-                  {user}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-
         <div className="form-group">
           <label>Description: </label>
           <input
@@ -114,6 +119,7 @@ const EditExercise = ({ match }) => {
           />
         </div>
       </form>
+      <Link to={`/user/${user._id}`}>Back</Link>
     </div>
   );
 };

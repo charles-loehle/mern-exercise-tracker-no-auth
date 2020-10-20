@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Message from './Message';
 
 const CreateExercise = () => {
   const [username, setUsername] = useState('');
@@ -13,6 +14,9 @@ const CreateExercise = () => {
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(0);
   const [date, setDate] = useState(new Date());
+
+  const [message, setMessage] = useState('');
+  const [variant, setVariant] = useState('');
 
   useEffect(() => {
     // GET  /users
@@ -35,13 +39,28 @@ const CreateExercise = () => {
       duration,
       date,
     };
-    console.log(exercise);
+    // console.log(exercise);
+
     // POST  /exercises/add
     // Add a new exercise
     axios
       .post(`${process.env.REACT_APP_API}/exercises/add`, exercise)
-      .then((res) => console.log(res.data))
-      .catch((error) => console.log(error));
+      .then((res) => {
+        console.log(res.data);
+        setMessage(res.data);
+        setVariant('success');
+        setTimeout(() => {
+          setMessage('');
+        }, 4000);
+      })
+      .catch((error) => {
+        console.log(error);
+        setMessage('Something went wrong, please try again');
+        setVariant('danger');
+        setTimeout(() => {
+          setMessage('');
+        }, 4000);
+      });
   };
 
   const getUser = (e) => {
@@ -55,6 +74,7 @@ const CreateExercise = () => {
   return (
     <div>
       <h1>Create an Exercise Log</h1>
+      {message && <Message variant={variant}>{message}</Message>}
       <form onSubmit={submitHandler}>
         <div className="form-group">
           <label>Username: </label>
